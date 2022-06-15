@@ -125,7 +125,23 @@
 										<div class="item-list">
 											<div class="info-user ml-3">
 												<div class="username">webhook最后出错时间</div>
-												<div class="status">{:date('Y-m-d H:i:s',$data.last_error_date)}</div>
+												<div class="status">
+													<!-- <if condition= "$data.last_error_date" > 
+														{date('Y-m-d H:i:s',$data.last_error_date)}
+													 <else> 
+														{"获取失败"}
+													</if>
+													 -->
+
+													 <?php
+													  if(!empty($data['last_error_date'])){ ?>
+														{date('Y-m-d H:i:s',$data['last_error_date'])}
+													 <?php   
+													 }else{
+													    echo "获取失败";
+													 }
+													 ?>
+												</div>
 											</div>
 											<i style="color:{$data.ok==true?'#00FF00':'#FF3030'}" class="{$data.ok==true?'fas fa-check':'fas fa-ban'}"></i>
 										</div>												

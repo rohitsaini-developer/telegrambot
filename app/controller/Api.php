@@ -19,7 +19,7 @@ class Api
         
         $admin=Db::table('admin')->where(array('id'=>1))->find();
         $token=$admin['token'];
-        $url = "https://api.telegram.org/bot".$token."/";
+        $url = "https://api.telegram.org/bot".$token."/getUpdates";
         
         //获取反射信息
         $update = json_decode(file_get_contents('php://input'), true);

@@ -15,7 +15,6 @@ class Admin extends Base
         $data['message_count']  =   Db::table('tg_message')->where('chat_id','>',0)->count();//私聊消息合计
         $data['message_count1'] =   Db::table('tg_message')->where('chat_id','<',0)->count();//群消息合计
         $data['api_count']      =   Db::table('api')->count();//群消息合计
-        
 
 
         //返回服务器信息
@@ -66,7 +65,7 @@ class Admin extends Base
         
         
         //获取WebhookInfo信息
-        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".$_SERVER['SERVER_NAME']."/admin/Api/index";
+        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".$_SERVER['SERVER_NAME']."/public/Api/index";
         
         $aurl = curl_init();
         curl_setopt($aurl, CURLOPT_URL, $url1);
@@ -81,12 +80,11 @@ class Admin extends Base
         $Webhook=json_decode($WebhookInfo,true);
         //解析
         $data['ok'] =   $Webhook['ok'];//Webhook回复
-        $data['pending_update_count']   =   $Webhook['result']['pending_update_count'];//等待更新数
-        $data['last_error_date']    =   $Webhook['result']['last_error_date'];//最后报错时间
-        $data['last_error_message'] =   $Webhook['result']['last_error_message'];//最后报错信息
-        $data['max_connections']    =   $Webhook['result']['max_connections'];//最大连接数
+        $data['pending_update_count']   = $Webhook['result']['pending_update_count'] ?? '';//等待更新数
+        $data['last_error_date']    =   $Webhook['result']['last_error_date'] ?? '';//最后报错时间
+        $data['last_error_message'] =   $Webhook['result']['last_error_message'] ?? '';//最后报错信息
+        $data['max_connections']    =   $Webhook['result']['max_connections'] ?? '';//最大连接数
         
-       
         return view('admin/admin', compact('info','data'));
        
     }
