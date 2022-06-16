@@ -10,6 +10,7 @@ return [
     //申请网址
     'app_url'         => env('app.app_url',''),
 
+
     // 应用的命名空间
     'app_namespace'    => '',
     // 是否启用路由

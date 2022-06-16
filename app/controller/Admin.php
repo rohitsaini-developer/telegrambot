@@ -183,7 +183,6 @@ class Admin extends Base
         if(!$data['token']){
             exit(json_encode(array('code'=>1,'msg'=>'token为空')));
         }
-        
         $res=Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
         if(!$res){
            exit(json_encode(array('code'=>1,'msg'=>'保存失败')));

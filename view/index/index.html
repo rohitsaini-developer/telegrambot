@@ -6,12 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{$data.shangpin_gid.name}</title>
 
-<link rel="stylesheet" type="text/css" href="../public/static/index/demo.css">
-<link rel="stylesheet" href="../public/static/index/main.css">
-<link rel="stylesheet" href="../public/static/index/sortable.min.css">
+<link rel="stylesheet" type="text/css" href="/public/static/index/demo.css">
+<link rel="stylesheet" href="/public/static/index/main.css">
+<link rel="stylesheet" href="/public/static/index/sortable.min.css">
 <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
 
-<script type="text/javascript" src="../public/static/index/sortable.min.js"></script>
+<script type="text/javascript" src="/public/static/index/sortable.min.js"></script>
 
 </head>
 <body>
@@ -19,7 +19,7 @@
 <main class="sortable">
 <div class="container">
   <div class="wrapper">
-	<!--<ul class="sortable__nav nav">
+	<ul class="sortable__nav nav">
 	  <li>
 		<a data-sjslink="all" class="nav__link">
 		  所有
@@ -35,7 +35,7 @@
 		  创意
 		</a>
 	  </li>
-	</ul>-->
+	</ul>
 	<div id="sortable" class="sjs-default">
 	  
 	  {volist name="data.shangpin" id="shangpin" emtpy="暂无数据}
@@ -46,7 +46,7 @@
               <div carousel-item>
                 <div><img class="card__picture" src="{$shangpin.fengmian_img}" alt=""></div>
                  <div><video class="card__picture" controls>
-                     <source src="/fengmian_img/20210110/20ffb73665abb67234a226fe7b80ee1b.mp4" type="video/mp4">
+                     <source src="/public/storage/shipin_video/logo.mp4" type="video/mp4">
                 </video></div>
               </div>
          </div>
