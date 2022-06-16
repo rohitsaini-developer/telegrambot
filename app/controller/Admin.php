@@ -64,7 +64,7 @@ class Admin extends Base
         $data['supports_inline_queries'] = $update['result']['supports_inline_queries'];//支持内联查询
         
         //获取WebhookInfo信息
-        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".config('app.app_url')."Api/index";
+        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=".config('app.app_url')."Api/index";
         
         $aurl = curl_init();
         curl_setopt($aurl, CURLOPT_URL, $url1);
