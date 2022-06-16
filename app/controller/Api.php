@@ -6,6 +6,7 @@ namespace app\controller;
 use think\Request;
 use think\Controller;
 use think\facade\Db;
+use think\facade\Log;
 
 class Api
 {
@@ -17,6 +18,7 @@ class Api
     public function index(){
         //设置连接根
         
+        
         $admin=Db::table('admin')->where(array('id'=>1))->find();
         $token=$admin['token'];
         
@@ -27,7 +29,7 @@ class Api
         $update = json_decode(file_get_contents('php://input'), true);
         
         $chat_id = $update['message']['chat']['id'];
-        $name = $update['message']['from']['first_name'];
+        $name = $update['message']['from']['first_name'].' '.$update['message']['from']['last_name'];
         $text=$update['message']['text'];//获取用户消息
         
         $data['text']=$text;
@@ -35,6 +37,7 @@ class Api
         $data['chat_id']=$chat_id;
         $data['time']=time();
         
+         
         $tg_message=Db::table('tg_message')->insert($data);
         
         if(is_numeric($data['text'])==true){
@@ -83,7 +86,7 @@ class Api
         ->find();
         
         if($api){
-        file_get_contents($url . $api['api'] . $api['text'] ."&chat_id=" . $chat_id);
+        file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
         exit;
         }
         
