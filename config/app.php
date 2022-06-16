@@ -8,7 +8,7 @@ return [
     'app_host'         => env('app.host', ''),
 
     //申请网址
-    'app_url'         => env('APP_URL','https://localhost/telegrambot/public/'),
+    'app_url'         => env('app.app_url',''),
 
     // 应用的命名空间
     'app_namespace'    => '',

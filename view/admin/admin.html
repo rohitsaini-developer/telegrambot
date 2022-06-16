@@ -135,7 +135,7 @@
 
 													 <?php
 													  if(!empty($data['last_error_date'])){ ?>
-														{date('Y-m-d H:i:s',$data['last_error_date'])}
+														{:date('Y-m-d H:i:s',$data['last_error_date'])}
 													 <?php   
 													 }else{
 													    echo "获取失败";

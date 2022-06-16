@@ -63,7 +63,6 @@ class Admin extends Base
         $data['can_read_all_group_messages'] = $update['result']['can_read_all_group_messages'];//可以读取所有群组消息吗
         $data['supports_inline_queries'] = $update['result']['supports_inline_queries'];//支持内联查询
         
-        
         //获取WebhookInfo信息
         $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".config('app.app_url')."Api/index";
         
@@ -72,12 +71,13 @@ class Admin extends Base
         curl_setopt($aurl, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($aurl, CURLOPT_SSL_VERIFYHOST,FALSE);
         curl_setopt($aurl, CURLOPT_POST, 1);
-        //curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($aurl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($aurl,CURLOPT_HTTPHEADER,$headerArray);
         curl_setopt($aurl, CURLOPT_RETURNTRANSFER, 1);
         $WebhookInfo = curl_exec($aurl);
         curl_close($aurl);
         $Webhook=json_decode($WebhookInfo,true);
+
         //解析
         $data['ok'] =   $Webhook['ok'];//Webhook回复
         $data['pending_update_count']   = $Webhook['result']['pending_update_count'] ?? '';//等待更新数
