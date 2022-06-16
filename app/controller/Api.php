@@ -5,7 +5,7 @@ namespace app\controller;
 
 use think\Request;
 use think\Controller;
-use think\Db;
+use think\facade\Db;
 
 class Api
 {
@@ -19,10 +19,13 @@ class Api
         
         $admin=Db::table('admin')->where(array('id'=>1))->find();
         $token=$admin['token'];
-        $url = "https://api.telegram.org/bot".$token."/getUpdates";
+        
+        $url = "https://api.telegram.org/bot".$token;
+
         
         //获取反射信息
         $update = json_decode(file_get_contents('php://input'), true);
+        
         $chat_id = $update['message']['chat']['id'];
         $name = $update['message']['from']['first_name'];
         $text=$update['message']['text'];//获取用户消息

@@ -65,7 +65,7 @@ class Admin extends Base
         
         
         //获取WebhookInfo信息
-        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".$_SERVER['SERVER_NAME']."/public/Api/index";
+        $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=/".config('app.app_url')."Api/index";
         
         $aurl = curl_init();
         curl_setopt($aurl, CURLOPT_URL, $url1);
@@ -103,7 +103,7 @@ class Admin extends Base
 
         $data['title1'] ='机器人设置';
         $request        = Request::instance();
-        $data['url']    = $request->domain();
+        $data['url']    = config('app.app_url');
         $data['admin']  = Db::table('admin')->where(array('id'=>$this->_admin['id']))->find();
 
         return view('admin/setting_bot', compact('data'));
