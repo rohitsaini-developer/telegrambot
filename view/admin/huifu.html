@@ -50,7 +50,7 @@
 
 <script>
     function delete_api(id){
-        $.get('delete_api',{'id':id},function(res){
+        $.post('delete_api',{'id':id},function(res){
               if(res.code>0){
                 $.notify({
                 	icon: 'flaticon-alarm-1',

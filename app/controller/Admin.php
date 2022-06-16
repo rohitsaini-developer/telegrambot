@@ -231,7 +231,7 @@ class Admin extends Base
     //删除回复信息请求
     
     public function delete_api(){
-        $id=input('get.id');
+        $id=input('id');
         $res = Db::table('api')->where(array('id'=>$id))->delete();
         if(!$res){
            exit(json_encode(array('code'=>1,'msg'=>'删除失败'))); 
