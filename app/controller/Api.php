@@ -157,4 +157,161 @@ class Api
         ->find();
         dump($api);
     }
+
+    public function callApi(){
+
+        $response = [];
+
+        // opcredit
+        $opcreditParameter = [
+            'op'   => 'a001',
+            'sign' => 'a001L3eFthWAUAXDsg5c1eOZP3qpDZAgo8ga'
+        ];
+        $response['opcredit'] = api('POST','https://api.easytogo123.com/opcredit',$opcreditParameter);
+
+
+        // createplayer
+        $createplayerParameter = [
+            'op'   => 'tp88',
+            'mem'  => 'easytogo',
+            'pass' => 'Abc123',
+            'sign' => '22745fa14fc267cb81ef318d0d90d52e'   
+        ];
+        $response['createplayer'] = api('POST','https://api.easytogo123.com/createplayer',$createplayerParameter);
+
+
+        // getappurl
+        $getappurlParameter = [
+            'op'   => 'tp88',
+            'prod' => 16,
+            'sign' => '6bdf1fc57d1e0ff4ee4fbf13534db55f'
+        ];
+        $response['getappurl'] = api('POST','https://api.easytogo123.com/getappurl',$getappurlParameter);
+
+
+        // getappusername
+        $getappusernameParameter = [
+            'op'   => 'tp88',
+            'mem'  => 'easytogo',
+            'prod' => 16,
+            'sign' => '30038261031535e3989936e155b5834b'
+        ];
+        $response['getappusername'] = api('POST','https://api.easytogo123.com/getappusername',$getappusernameParameter);
+        
+        
+        // balance
+        $balanceParameter = [
+            'op'   => 'tp88',
+            'prod' => 16,
+            'mem'  => 'easytogo',
+            'pass' => 'Abc123',
+            'sign' => '30038261031535e3989936e155b5834b'
+        ];
+        $response['balance'] = api('POST','https://api.easytogo123.com/balance',$balanceParameter);
+        
+
+        // deposit
+        $depositParameter = [
+            'op'     => 'tp88',
+            'prod'   => 16,
+            'ref_no' => 'DEP000001',
+            'amount' => 10.00,
+            'mem'    => 'easytogo',
+            'pass'   => 'Abc123',
+            'sign'   => '8a6ef5521f98171a38f92e07d01c21c1'
+        ];
+        $response['deposit'] = api('POST','https://api.easytogo123.com/deposit',$depositParameter);
+        
+        // withdraw
+        $withdrawParameter = [
+            'op'     => 'tp88',
+            'prod'   => 16,
+            'ref_no' => 'WIT000001',
+            'amount' => 10.00,
+            'mem'    => 'easytogo',
+            'pass'   => 'Abc123',
+            'sign'   => 'a76ec014644b2defac4d896e7b6d3775'
+        ];
+        $response['withdraw'] = api('POST','https://api.easytogo123.com/withdraw',$withdrawParameter);
+        
+
+        // game
+        $gameParameter = [
+            'type'   => 2,
+            'h5'     => 1,
+            'lang'   => "en-US",
+            'op'     => 'tp88',
+            'prod'   => 16,
+            'ref_no' => 'WIT000001',
+            'amount' => 10.00,
+            'mem'    => 'easytogo',
+            'pass'   => 'Abc123',
+            'sign'   => '928751b9b801604c0d166195c8f53d04'
+        ];
+        $response['game'] = api('POST','https://api.easytogo123.com/game',$gameParameter);
+        
+        // chgpass
+        $chgpassParameter = [
+            'op'     => 'tp88',
+            'prod'   => 16,
+            'mem'    => 'easytogo',
+            'pass'   => 'Abc123',
+            'sign'   => '2e3bdfcb30d1ab2506601e4f919100f2'
+        ];
+        $response['chgpass'] = api('POST','https://api.easytogo123.com/chgpass',$chgpassParameter);
+        
+
+        // fetch
+        $fetchParameter = [
+            'op'     => 'tp88',
+            'key'    => 88888,
+            'sign'   => 'b901e9f14110ed4f927d68143a91357f'
+        ];
+        $response['fetch'] = api('POST','https://report.easytogo123.com/fetch',$fetchParameter);
+        
+
+        // mark
+        $markParameter = [
+            'op'     => 'tp88',
+            'mark'   => [4409,4410,4411],
+            'sign'   => '879047ea436581e5c40f567c9fea018a'
+        ];
+        $response['mark'] = api('POST','https://report.easytogo123.com/mark', $markParameter);
+        
+
+        // bethistory
+        $bethistoryParameter = [
+            'op'     => 'tp88',
+            'start'  => '2022-06-21 16:35:00',
+            'end'    => '2022-06-21 16:40:00',
+            'sign'   => 'afcf2de4b66c80d2ce24fb9014ba3fc7'
+        ];
+        $response['bethistory'] = api('POST','https://report.easytogo123.com/bethistory', $bethistoryParameter);
+        
+        // getgamelist
+        $getgamelistParameter = [
+            'op'     => 'tp88',
+            'prod'   => 16,
+            'type'   => 1,
+            'sign'   => '24f247a94486076855d5be63883fffe1'
+        ];
+        $response['getgamelist'] = api('POST','https://api.easytogo123.com/getgamelist', $getgamelistParameter);
+
+
+        // callback
+        $callbackParameter = [
+            'op'     => 'tp88',
+            'mem'    => 'easytogo',
+            'pass'   => 'Abc123',
+            'prod'   => 16,
+            'sign'   => 'dcae6a6021a05484e0688d2b6c904311'
+        ];
+        $response['callback'] = api('POST','https://api.easytogo123.com/callback', $callbackParameter);
+
+        
+        dd($response);
+
+    }
+
+
 }

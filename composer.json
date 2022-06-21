@@ -25,8 +25,7 @@
         "topthink/think-orm": "^2.0",
         "topthink/think-view": "^1.0",
         "topthink/think-helper": "^3.1",
-        "topthink/think-captcha": "^3.0",
-        "topthink/think-api": "^1.0"
+        "topthink/think-captcha": "^3.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
@@ -38,7 +37,11 @@
         },
         "psr-0": {
             "": "extend/"
-        }
+        },
+        "files": [
+            "app/helpers/Helper.php"
+    
+        ]
     },
     "config": {
         "preferred-install": "dist"
