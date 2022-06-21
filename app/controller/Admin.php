@@ -57,11 +57,11 @@ class Admin extends Base
         $update=json_decode($output,true);
         //dump($update);
         
-        $data['first_name'] =   $update['result']['first_name'];//机器人组名
-        $data['username']   =   $update['result']['username'];//机器人姓名
-        $data['can_join_groups']    =   $update['result']['can_join_groups'];//可以加入组织？turn，false
-        $data['can_read_all_group_messages'] = $update['result']['can_read_all_group_messages'];//可以读取所有群组消息吗
-        $data['supports_inline_queries'] = $update['result']['supports_inline_queries'];//支持内联查询
+        $data['first_name'] =   $update['result']['first_name'] ?? '';//机器人组名
+        $data['username']   =   $update['result']['username'] ?? '';//机器人姓名
+        $data['can_join_groups']    =   $update['result']['can_join_groups'] ?? '';//可以加入组织？turn，false
+        $data['can_read_all_group_messages'] = $update['result']['can_read_all_group_messages'] ?? '';//可以读取所有群组消息吗
+        $data['supports_inline_queries'] = $update['result']['supports_inline_queries'] ?? '';//支持内联查询
         
         //获取WebhookInfo信息
         $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=".config('app.app_url')."Api/index";
@@ -79,7 +79,7 @@ class Admin extends Base
         $Webhook=json_decode($WebhookInfo,true);
 
         //解析
-        $data['ok'] =   $Webhook['ok'];//Webhook回复
+        $data['ok'] =   $Webhook['ok'] ?? false;//Webhook回复
         $data['pending_update_count']   = $Webhook['result']['pending_update_count'] ?? '';//等待更新数
         $data['last_error_date']    =   $Webhook['result']['last_error_date'] ?? '';//最后报错时间
         $data['last_error_message'] =   $Webhook['result']['last_error_message'] ?? '';//最后报错信息
