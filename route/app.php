@@ -12,6 +12,7 @@ use think\facade\Route;
 
 
 // Auth routes
+Route::get('', 'admin/login/login');
 Route::get('login', 'admin/login/login');
 Route::post('dulogin', 'admin/Login/dulogin');
 Route::post('logout', 'admin/Login/outlogin');
