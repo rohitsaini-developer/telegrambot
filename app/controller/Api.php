@@ -86,8 +86,8 @@ class Api
         ->find();
         
         if($api){
-        file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
-        exit;
+          file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+          exit;
         }
         
         // if($data['text']=='/look'){
