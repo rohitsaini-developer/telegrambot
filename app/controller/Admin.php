@@ -42,20 +42,10 @@ class Admin extends Base
         $admin  = Db::table('admin')->where(array('id'=>1))->find();
         $token  = $admin['token'];
         $url    = "https://api.telegram.org/bot".$token."/getMe";
-    
-        $headerArray =array("Content-type:application/json;charset='utf-8'","Accept:application/json");
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,FALSE);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        //curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl,CURLOPT_HTTPHEADER,$headerArray);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($curl);
-        curl_close($curl);
-        $update=json_decode($output,true);
-        //dump($update);
+        
+        $update = getApiData($url);
+       
+        $headerArray = array("Content-type:application/json;charset='utf-8'","Accept:application/json");
         
         $data['first_name'] =   $update['result']['first_name'] ?? '';//机器人组名
         $data['username']   =   $update['result']['username'] ?? '';//机器人姓名
