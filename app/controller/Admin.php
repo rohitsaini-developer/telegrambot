@@ -183,9 +183,37 @@ class Admin extends Base
         if(!$data['token']){
             exit(json_encode(array('code'=>1,'msg'=>'token为空')));
         }
-        $res=Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
-        if(!$res){
-           exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
+
+        // Save bot in master bot table
+        $token = input('post.token');
+        $masterBotData = array();
+
+        $url = 'https://api.telegram.org/bot'.$token.'/getMe';
+        $getBotDetail = getApiData($url);
+
+        if($getBotDetail['ok']){
+
+            $res = Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
+            if($res === 1){
+               exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
+            }
+
+            $masterBotData['bot_id']    = $getBotDetail['result']['id'];
+            $masterBotData['name']      = $getBotDetail['result']['first_name']; 
+            $masterBotData['username']  = $getBotDetail['result']['username'];  
+            $masterBotData['token']     = $token;  
+            $masterBotData['update_time'] = date("Y-m-d h:i:s");
+
+            $botExists = Db::table('master_bot')->where('bot_id', $getBotDetail['result']['id'])->where('token', $token)->find();
+
+            if(is_null($botExists)){
+                $masterBot = Db::table('master_bot')->save($masterBotData);
+            }else{
+                $masterBot = Db::table('master_bot')->where('bot_id', $getBotDetail['result']['id'])->update($masterBotData);
+            }
+
+        }else{
+            exit(json_encode(array('code'=>1,'msg'=>'令牌无效')));
         }
 
         return json(array('code'=>0,'msg'=>'保存成功'));
