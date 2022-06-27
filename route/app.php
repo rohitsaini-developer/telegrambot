@@ -61,7 +61,6 @@ Route::post('update_img', 'admin/Admin/update_img');
 
 Route::post('update_shangpinimg', 'admin/Admin/update_shangpinimg');
 
-
 Route::post('index', 'admin/Index/index');
 
 Route::get('call_api', 'Api/callApi');
