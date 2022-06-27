@@ -70,3 +70,23 @@ if (!function_exists('getApiData')) {
 
 }  
 
+/**
+ * sendMessage to telegram bot
+ */
+if(!function_exists('sendMessage')){
+    function sendMessage($chatID, $data, $token) {
+        
+        $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $chatID;
+        $url = $url . "&text=" . $data;
+        $ch = curl_init();
+        $optArray = array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true
+        );
+        curl_setopt_array($ch, $optArray);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+    
+}
