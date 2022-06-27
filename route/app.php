@@ -63,3 +63,4 @@ Route::post('update_shangpinimg', 'admin/Admin/update_shangpinimg');
 
 Route::post('index', 'admin/Index/index');
 
+

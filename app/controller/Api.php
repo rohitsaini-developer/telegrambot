@@ -86,7 +86,7 @@ class Api
         ->find();
         
         if($api){
-        file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+        file_get_contents($url . "/" .$api['api'].$api['text']."&chat_id=" . $chat_id);
         exit;
         }
         
