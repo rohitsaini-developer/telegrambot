@@ -12,6 +12,7 @@ use think\facade\Route;
 
 
 // Auth routes
+Route::get('', 'admin/login/login');
 Route::get('login', 'admin/login/login');
 Route::post('dulogin', 'admin/Login/dulogin');
 Route::post('logout', 'admin/Login/outlogin');
@@ -60,7 +61,8 @@ Route::post('update_img', 'admin/Admin/update_img');
 
 Route::post('update_shangpinimg', 'admin/Admin/update_shangpinimg');
 
-
 Route::post('index', 'admin/Index/index');
+
+Route::get('call_api', 'Api/callApi');
 
 

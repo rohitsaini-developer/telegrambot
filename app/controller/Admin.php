@@ -42,26 +42,16 @@ class Admin extends Base
         $admin  = Db::table('admin')->where(array('id'=>1))->find();
         $token  = $admin['token'];
         $url    = "https://api.telegram.org/bot".$token."/getMe";
-    
-        $headerArray =array("Content-type:application/json;charset='utf-8'","Accept:application/json");
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,FALSE);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        //curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl,CURLOPT_HTTPHEADER,$headerArray);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($curl);
-        curl_close($curl);
-        $update=json_decode($output,true);
-        //dump($update);
         
-        $data['first_name'] =   $update['result']['first_name'];//机器人组名
-        $data['username']   =   $update['result']['username'];//机器人姓名
-        $data['can_join_groups']    =   $update['result']['can_join_groups'];//可以加入组织？turn，false
-        $data['can_read_all_group_messages'] = $update['result']['can_read_all_group_messages'];//可以读取所有群组消息吗
-        $data['supports_inline_queries'] = $update['result']['supports_inline_queries'];//支持内联查询
+        $update = getApiData($url);
+       
+        $headerArray = array("Content-type:application/json;charset='utf-8'","Accept:application/json");
+        
+        $data['first_name'] =   $update['result']['first_name'] ?? '';//机器人组名
+        $data['username']   =   $update['result']['username'] ?? '';//机器人姓名
+        $data['can_join_groups']    =   $update['result']['can_join_groups'] ?? '';//可以加入组织？turn，false
+        $data['can_read_all_group_messages'] = $update['result']['can_read_all_group_messages'] ?? '';//可以读取所有群组消息吗
+        $data['supports_inline_queries'] = $update['result']['supports_inline_queries'] ?? '';//支持内联查询
         
         //获取WebhookInfo信息
         $url1 =  "https://api.telegram.org/bot".$token."/getWebhookInfo?url=".config('app.app_url')."Api/index";
@@ -79,7 +69,7 @@ class Admin extends Base
         $Webhook=json_decode($WebhookInfo,true);
 
         //解析
-        $data['ok'] =   $Webhook['ok'];//Webhook回复
+        $data['ok'] =   $Webhook['ok'] ?? false;//Webhook回复
         $data['pending_update_count']   = $Webhook['result']['pending_update_count'] ?? '';//等待更新数
         $data['last_error_date']    =   $Webhook['result']['last_error_date'] ?? '';//最后报错时间
         $data['last_error_message'] =   $Webhook['result']['last_error_message'] ?? '';//最后报错信息
@@ -183,9 +173,37 @@ class Admin extends Base
         if(!$data['token']){
             exit(json_encode(array('code'=>1,'msg'=>'token为空')));
         }
-        $res=Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
-        if(!$res){
-           exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
+
+        // Save bot in master bot table
+        $token = input('post.token');
+        $masterBotData = array();
+
+        $url = 'https://api.telegram.org/bot'.$token.'/getMe';
+        $getBotDetail = getApiData($url);
+
+        if($getBotDetail['ok']){
+
+            $res = Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
+            if($res === 1){
+               exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
+            }
+
+            $masterBotData['bot_id']    = $getBotDetail['result']['id'];
+            $masterBotData['name']      = $getBotDetail['result']['first_name']; 
+            $masterBotData['username']  = $getBotDetail['result']['username'];  
+            $masterBotData['token']     = $token;  
+            $masterBotData['update_time'] = date("Y-m-d h:i:s");
+
+            $botExists = Db::table('master_bot')->where('bot_id', $getBotDetail['result']['id'])->where('token', $token)->find();
+
+            if(is_null($botExists)){
+                $masterBot = Db::table('master_bot')->save($masterBotData);
+            }else{
+                $masterBot = Db::table('master_bot')->where('bot_id', $getBotDetail['result']['id'])->update($masterBotData);
+            }
+
+        }else{
+            exit(json_encode(array('code'=>1,'msg'=>'令牌无效')));
         }
 
         return json(array('code'=>0,'msg'=>'保存成功'));
