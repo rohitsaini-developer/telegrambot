@@ -45,7 +45,7 @@ class CreateTgTp88User extends Migrator
         ->addColumn('record', 'text',array('default'=>Null,'comment'=>'Record Verify Time'))
         ->addTimestamps() 
         ->addSoftDelete()  
-
+        ->addIndex(array('chat_id'), array('unique'  =>  true))
         ->create();
 
         //Changes in Id column

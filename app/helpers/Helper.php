@@ -76,7 +76,7 @@ if (!function_exists('getApiData')) {
 if(!function_exists('sendMessage')){
     function sendMessage($chatID, $data, $token) {
         
-        $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $chatID;
+        $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $chatID."&parse_mode=html";
         $url = $url . "&text=" . $data;
         $ch = curl_init();
         $optArray = array(

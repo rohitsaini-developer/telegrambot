@@ -108,22 +108,43 @@ class Api
        
 
         if(is_numeric($data['text'])){
-            $messageData = $data['text'].' is this your phone number? <b>Yes?</b> &parse_mode=html';
+            
+            $phone = $data['text'];
+            $bot = Db::table('master_bot')->where('token','=',$token)->find();
+           
+            $updatPhoneNumber = array(
+                'bot_id'  => $bot['id'],
+                'chat_id' => $chat_id,
+                'name'    => $bot['name'],
+                'number'  => $phone,
+            );
+
+            $userExists = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();
+
+            if(is_null($userExists)){
+                $user = Db::table('tg_tp88user')->save($updatPhoneNumber);
+            }else{
+                $user = Db::table('tg_tp88user')->where('chat_id', $chat_id)->update($updatPhoneNumber);
+            }
+            
+            $messageData = $phone.' is this your phone number? %0A<b>Yes?</b>';
+
             sendMessage($chat_id,$messageData,$token);
+
             exit;
         }
-
+        
         if(strtolower($data['text']) == 'yes'){
-            $messageData = 'SMS contains 6-digit code has been sent to 60172353727 
-            if 60172353727 is not your number press 
-            /reverifyphone 
-            to restart the verify process 
-            Please insert 6-digit verification code here:';
 
+            $phone = Db::table('tg_tp88user')->where('chat_id','=',$chat_id)->value('number');
+
+            $messageData = 'SMS contains 6-digit code has been sent to '.$phone.' %0Aif '.$phone.' is not your number press %0A/reverifyphone %0Ato restart the verify process %0APlease insert 6-digit verification code here:';
      
-            $resp = api('POST',$url . "/auth.sendCode&parse_mode=html",array("phone_number"=>"918209061054","api_id"=>"13628466","app_hash"=>"84dead29a279eac6e474c26826ff8e48")); 
+            // $resp = api('POST',$url . "/auth.sentCodeTypeSms",array("phone_number"=>"918209061054","api_id"=>"13628466","app_hash"=>"84dead29a279eac6e474c26826ff8e48")); 
             
-            file_get_contents($url . "/sendmessage?text=".$messageData."&chat_id=" . $chat_id.'&parse_mode=html');
+            // Log::record($resp);
+            
+            sendMessage($chat_id,$messageData,$token);
             exit;
         }
 
