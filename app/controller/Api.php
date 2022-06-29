@@ -129,7 +129,8 @@ class Api
             
             $messageData = $phone.' is this your phone number? %0A<b>Yes?</b>';
 
-            sendMessage($chat_id,$messageData,$token);
+            file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
+            // sendMessage($chat_id,$messageData,$token);
 
             exit;
         }
@@ -140,8 +141,10 @@ class Api
 
             $messageData = 'SMS contains 6-digit code has been sent to '.$phone.' %0Aif '.$phone.' is not your number press %0A/reverifyphone %0Ato restart the verify process %0APlease insert 6-digit verification code here:';
      
-            
-            sendMessage($chat_id,$messageData,$token);
+
+            // sendMessage($chat_id,$messageData,$token);
+            file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
+
             exit;
         }
 
