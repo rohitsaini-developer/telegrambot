@@ -21,7 +21,7 @@
                             <!--feed-item-warning-->
 							<li class="feed-item {$vo.chat_id>0?'feed-item-info':'feed-item-warning'}">
 								<time class="date" style="color:#fff;" datetime="9-23">{:date('Y/m/d H:i',$vo.time)}</time>
-								<span class="text">{$vo.text} <a href="">@{$vo.name}</a></span>
+								<span class="text">{:urldecode($vo.text)} <a href="">@{$vo.name}</a></span>
 							</li>
                             {/volist}
 						</ol>
