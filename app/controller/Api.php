@@ -26,18 +26,14 @@ class Api
         
         //获取反射信息
         $update = json_decode(file_get_contents('php://input'), true);
-        
-        $chat_id = $update['message']['chat']['id'];
-        $name = $update['message']['from']['first_name'].' '.$update['message']['from']['last_name'];
-        $text=$update['message']['text'];//获取用户消息
-        
-        $data['text']=$text;
-        $data['name']=$name;
-        $data['chat_id']=$chat_id;
-        $data['time']=time();
-        
-         
-        $tg_message=Db::table('tg_message')->insert($data);
+        $chat_id = $update['message']['chat']['id']; // GET USER CHAT ID
+        $name = $update['message']['from']['first_name'].' '.$update['message']['from']['last_name']; //GET USER NAME
+        $text = $update['message']['text']; //GET CHAT DATA
+        $message_id = $update['message']['message_id']; // GET MESSAGE ID
+        $update_id = $update['update_id']; // GET UPDATE ID
+        // $usersendtype = $update['entities']['type']; // GET TYPE OF TEXT (bot_command/phone_number)
+        // $tg_message=Db::table('tg_message')->insert($data);
+        $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
         
       /*  
         if(is_numeric($data['text'])==true){
@@ -78,17 +74,158 @@ class Api
         }*/
         
         //获取数据库关键词
-        $api=Db::table('api')
-        ->alias('a')
-        ->join('api_gid b','a.gid=b.gid','LEFT')
-        ->where(array('keywords'=>$data['text']))
-        ->field('a.gid as agid,a.*,b.*')
-        ->find();
+        // $api=Db::table('api')
+        // ->alias('a')
+        // ->join('api_gid b','a.gid=b.gid','LEFT')
+        // ->where(array('keywords'=>$text))
+        // ->field('a.gid as agid,a.*,b.*')
+        // ->find();
         
-        if($api){
-          file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
-          exit;
+        // if($api){
+        //   file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+        //   $this->savechatdata($api['text'],'SYSTEM',$chat_id);
+        //   exit;
+        // }
+        if($text=='/register'){
+            $reply = "Please keyin your mobile number for verify.";
+            file_get_contents($url . "/sendmessage?text=".$reply."&reply_to_message_id=".$message_id."&chat_id=" . $chat_id);
+            $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
+            exit;
+            
+            // if(is_numeric($text)){
+                
+            //     $phone = $text;
+            //     $bot = Db::table('master_bot')->where('token','=',$token)->find();
+               
+            //     $updatPhoneNumber = array(
+            //         'bot_id'  => $bot['id'],
+            //         'chat_id' => $chat_id,
+            //         'name'    => $bot['name'],
+            //         'number'  => $phone,
+            //     );
+    
+            //     $userExists = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();
+    
+            //     if(is_null($userExists)){
+            //         $user = Db::table('tg_tp88user')->save($updatPhoneNumber);
+            //     }else{
+            //         $user = Db::table('tg_tp88user')->where('chat_id', $chat_id)->update($updatPhoneNumber);
+            //     }
+                
+            //     $messageData = $phone.' is this your phone number? %0A<b>Yes?</b>';
+    
+            //     file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
+            //     // sendMessage($chat_id,$messageData,$token);
+    
+            //     exit;
+            // }
+            
+            // if(strtolower($text) == 'yes'){
+    
+            //     $phone = Db::table('tg_tp88user')->where('chat_id','=',$chat_id)->value('number');
+    
+            //     $messageData = 'SMS contains 6-digit code has been sent to '.$phone.' %0Aif '.$phone.' is not your number press %0A/reverifyphone %0Ato restart the verify process %0APlease insert 6-digit verification code here:';
+         
+            //     // sendMessage($chat_id,$messageData,$token);
+            //     file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
+            //     exit;
+            // }
         }
+        if(is_numeric($text)){
+            $phone = $text;
+            $bot = Db::table('master_bot')->where('token','=',$token)->find();
+           
+            $updatePhoneNumber = array(
+                'bot_id'  => $bot['id'],
+                'chat_id' => $chat_id,
+                'name'    => $bot['name'],
+                'number'  => $phone,
+            );
+
+            $userExists = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();
+
+            if(is_null($userExists)){
+                $user = Db::table('tg_tp88user')->save($updatePhoneNumber);
+            }else{
+                $user = Db::table('tg_tp88user')->where('chat_id', $chat_id)->update($updatePhoneNumber);
+            }
+            
+            // $messageData = $phone.' confirm your phone number? %0A<b>Yes?</b>';
+            $messageData = urlencode($phone." confirm your phone number? \n\n<b>Yes?</b>");
+            file_get_contents($url . "/sendmessage?text=".$messageData."&reply_to_message_id=".$message_id."&parse_mode=html&chat_id=" . $chat_id);
+            $this->savechatdata($update_id,$messageData,'SYSTEM',$chat_id,$message_id);
+            exit;
+            // // Create data
+            // $data = http_build_query([
+            //     'text' => 'Yes - No',
+            //     'chat_id' => '$chat_id'
+            // ]);
+        
+            // // Create keyboard
+            // $keyboard = json_encode([
+            //     "inline_keyboard" => [
+            //         [
+            //             [
+            //                 "text" => "Yes",
+            //                 "callback_data" => "yes"
+            //             ],
+            //             [
+            //                 "text" => "No",
+            //                 "callback_data" => "no"
+            //             ]
+            //         ]
+            //     ]
+            // ]);
+        
+            // // Send keyboard
+            // $url = "https://api.telegram.org/bot$token/sendMessage?{$data}&reply_markup={$keyboard}";
+            // $res = @file_get_contents($url);
+        
+            // // Get message_id to alter later
+            // $message_id = json_decode($res)->result->message_id;
+        
+            // // Continually check for a 'press'
+            // while (true) {
+        
+            //     // Call /getUpdates
+            //     $updates = @file_get_contents("https://api.telegram.org/bot$token/getUpdates");
+            //     $updates = json_decode($updates);
+        
+            //     // Check if we've got a button press
+            //     if (count($updates->result) > 0 && isset(end($updates->result)->callback_query->data)) {
+        
+            //         // Get callback data
+            //         $callBackData = end($updates->result)->callback_query->data;
+        
+            //         // Check for 'stop'
+            //         if ($callBackData === 'yes') {
+        
+            //             // Say goodbye and remove keyboard
+            //             $data = http_build_query([
+            //                 'text' => 'Bye!',
+            //                 'chat_id' => '$chat_id',
+            //                 'message_id' => $message_id
+            //             ]);
+            //             $alter_res = @file_get_contents("https://api.telegram.org/bot$token/editMessageText?{$data}");
+        
+            //             // End while
+            //             break;
+            //         }
+        
+            //         // Alter text with callback_data
+            //         $data = http_build_query([
+            //             'text' => 'Selected: ' . $callBackData,
+            //             'chat_id' => '$chat_id',
+            //             'message_id' => $message_id
+            //         ]);
+            //         $alter_res = @file_get_contents("https://api.telegram.org/bot$token/editMessageText?{$data}&reply_markup={$keyboard}");
+            //     }
+        
+            //     // Sleep for a second, and check again
+            //     sleep(1);
+            // }
+        }
+        
         
         // $keyboard = [
         //     'inline_keyboard' => [
@@ -105,47 +242,6 @@ class Api
         //         ]
         //     ]
         // ]);
-       
-
-        if(is_numeric($data['text'])){
-            
-            $phone = $data['text'];
-            $bot = Db::table('master_bot')->where('token','=',$token)->find();
-           
-            $updatPhoneNumber = array(
-                'bot_id'  => $bot['id'],
-                'chat_id' => $chat_id,
-                'name'    => $bot['name'],
-                'number'  => $phone,
-            );
-
-            $userExists = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();
-
-            if(is_null($userExists)){
-                $user = Db::table('tg_tp88user')->save($updatPhoneNumber);
-            }else{
-                $user = Db::table('tg_tp88user')->where('chat_id', $chat_id)->update($updatPhoneNumber);
-            }
-            
-            $messageData = $phone.' is this your phone number? %0A<b>Yes?</b>';
-
-            file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
-            // sendMessage($chat_id,$messageData,$token);
-
-            exit;
-        }
-        
-        if(strtolower($data['text']) == 'yes'){
-
-            $phone = Db::table('tg_tp88user')->where('chat_id','=',$chat_id)->value('number');
-
-            $messageData = 'SMS contains 6-digit code has been sent to '.$phone.' %0Aif '.$phone.' is not your number press %0A/reverifyphone %0Ato restart the verify process %0APlease insert 6-digit verification code here:';
-     
-            // sendMessage($chat_id,$messageData,$token);
-            file_get_contents($url . "/sendmessage?text=".$messageData."&parse_mode=html&chat_id=" . $chat_id);
-            exit;
-        }
-
         
         // if($data['text']=='/look@Azhe_php_bot'){
         // file_get_contents($url . "sendmessage?text=您可以私聊或回复我发送以下文字：胸大、甜美、大长腿、清纯、骚情" ."&chat_id=" . $chat_id);
@@ -195,7 +291,75 @@ class Api
         // //发送给用户
         // file_get_contents($url . "sendmessage?text=你好，我是由红牛开发的一款演示机器人。具体操作：http://azhe.live" ."&chat_id=" . $chat_id);
     }
-
+    
+    /**
+     * 29/06/2022
+     * BY COMMAND
+     */
+    public function process($text){
+        
+    }
+    
+    /**
+     * 29/06/2022
+     * CLEAR PENDING TASK
+     * https://api.telegram.org/bot1139171840:AAEsTH2LQVRTzqFCkNvh3rq_OjFR-v8MAaw/getupdates?offset=382277377
+     */
+    public function clearTaskPending($update_id){
+        file_get_contents("https://api.telegram.org/bot1139171840:AAEsTH2LQVRTzqFCkNvh3rq_OjFR-v8MAaw/getupdates?offset=".$update_id);
+    }
+    
+    /**
+     * 29/06/2022
+     * SAVE CHAT DATA
+     * $update_id
+     * $text
+     * $name
+     * $chat_id
+     * $message_id
+     * $type = 1: SEND 2: REPLY 3: OTHER...
+     */
+    public function savechatdata($update_id,$text,$name,$chat_id,$message_id){
+        $data['text']=$text;
+        $data['name']=$name;
+        $data['chat_id']=$chat_id;
+        $data['message_id']=$message_id;
+        $data['update_id']=$update_id;
+        // $data['type']=$type;
+        $data['time']=time();
+        Db::table('tg_message')->insert($data);
+    }
+    
+    /**
+     * 29/06/2022
+     * SEND MESSAGE
+     * https://core.telegram.org/bots/api#sendmessage
+     * Method : file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+     */
+    public function sendMessage($text,$chat_id){
+        $admin=Db::table('admin')->where(array('id'=>1))->find();
+        $token=$admin['token'];
+        
+        $url = "https://api.telegram.org/bot".$token;
+        file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+    }
+    
+    /**
+     * 29/06/2022
+     * REPLY MESSAGE BY GET MESSAGE ID
+     * https://core.telegram.org/bots/api#sendmessage
+     * Method : file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id);
+     */
+    public function replyMessage($text,$chat_id,$messageid){
+        $admin=Db::table('admin')->where(array('id'=>1))->find();
+        $token=$admin['token'];
+        
+        $url = "https://api.telegram.org/bot".$token;
+        file_get_contents($url . "/sendmessage?text=".$api['text']."&chat_id=" . $chat_id."&reply_to_message_id=" . $messageid);
+    }
+    
+    
+    
     public function ceshi(){
         
         $data['text'] = input('get.text');
