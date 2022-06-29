@@ -140,9 +140,6 @@ class Api
 
             $messageData = 'SMS contains 6-digit code has been sent to '.$phone.' %0Aif '.$phone.' is not your number press %0A/reverifyphone %0Ato restart the verify process %0APlease insert 6-digit verification code here:';
      
-            // $resp = api('POST',$url . "/auth.sentCodeTypeSms",array("phone_number"=>"918209061054","api_id"=>"13628466","app_hash"=>"84dead29a279eac6e474c26826ff8e48")); 
-            
-            // Log::record($resp);
             
             sendMessage($chat_id,$messageData,$token);
             exit;
