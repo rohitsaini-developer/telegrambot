@@ -44,7 +44,7 @@ class Api
             $message_id = $update['message']['message_id']; // GET MESSAGE ID
 
             $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
-           
+            
         }
 
         
@@ -201,9 +201,17 @@ class Api
             $reply = "Please keyin your mobile number for verify.";
             file_get_contents($url . "/sendmessage?text=".$reply."&reply_to_message_id=".$message_id."&chat_id=" . $chat_id);
             $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
+            
             exit;
         }
 
+        if($text=='/menu'){
+            $reply = urlencode("\xE2\x9E\xA1 Sila tekan kata kunci perkhidmatan: \n\n /menu - Halaman Utama\xF0\x9F\x94\x8E \n\n \xF0\x9F\x8F\xA7 Deposit/Cuci/Pindah Kredit \n /pindeposit - Deposit dengan telco pin \n /cuci - Cuci masuk bank akaun anda \n /masukkredit - Dompet \xE2\x86\xAA Game ID \n /keluarkredit - Game ID \xE2\x86\xAA	Dompet ");
+            file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
+            $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
+            
+            exit;
+        }
         
         // if($data['text']=='/look@Azhe_php_bot'){
         // file_get_contents($url . "sendmessage?text=您可以私聊或回复我发送以下文字：胸大、甜美、大长腿、清纯、骚情" ."&chat_id=" . $chat_id);
@@ -288,7 +296,7 @@ class Api
         $data['time']=time();
         Db::table('tg_message')->insert($data);
     }
-
+    
     public function callApi(){
 
         $allApis = [
