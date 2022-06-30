@@ -27,6 +27,8 @@ class Api
         //获取反射信息
         $update = json_decode(file_get_contents('php://input'), true);
         
+        Log::record($update);
+
         // $chat_id = $update['message']['chat']['id'];
         // $name = $update['message']['from']['first_name'].' '.$update['message']['from']['last_name'];
         // $text=$update['message']['text'];//获取用户消息
@@ -111,7 +113,7 @@ class Api
        
         if($text=='/register'){
             $reply = urlencode("Please keyin your mobile number for verify.");
-            file_get_contents($url . "/sendmessage?text=".$reply."&reply_to_message_id=".$message_id."&chat_id=" . $chat_id);
+            file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
             $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
             exit;
         }
@@ -154,36 +156,54 @@ class Api
                 ]
             ]);
 
-            file_get_contents($url . "/sendmessage?text=".$messageData."&reply_to_message_id=".$message_id."&reply_markup={$keyboard}&parse_mode=html&chat_id=" . $chat_id);
+            // file_get_contents($url . "/sendmessage?text=".$messageData."&reply_to_message_id=".$message_id."&reply_markup={$keyboard}&parse_mode=html&chat_id=" . $chat_id);
+            file_get_contents($url . "/sendmessage?text=".$messageData."&reply_markup={$keyboard}&parse_mode=html&chat_id=" . $chat_id);
             $this->savechatdata($update_id,$messageData,'SYSTEM',$chat_id,$message_id);
+
 
             exit;
         }
 
-        if($callback_text === 'yes' && $textType == 'phone_number'){
+        if($callback_text === 'yes'){
 
-             // remove keyboard
-             $data = http_build_query([
-                'text' => $phone." confirm your phone number?",
+
+            // // Send Verification code
+            // $sendcode = http_build_query([
+            //     'phone_number' => $phone,
+            //     'api_id' => 13628466,
+            //     'api_hash' => '84dead29a279eac6e474c26826ff8e48',
+            //     'settings' => json_encode(array('allowFlashcall'=>true, 'currentNumber'=>true, 'allowAppHash'=>true)),
+            // ]);
+            
+            // file_get_contents($url."/auth.sendCode?{$sendcode}");
+
+            $phone_number = Db::table('tg_tp88user')->where('chat_id', $callback_chat_id)->value('number');
+            // remove keyboard
+            $data = http_build_query([
+                'text' => $phone_number.' confirm your phone number?',
                 'chat_id' => $callback_chat_id,
                 'message_id' => $callback_message_id
             ]);
             
             file_get_contents($url."/editMessageText?{$data}");
 
-            $reply = urlencode("SMS contains 6-digit code has been sent to {$phone} \n\n if {$phone} is not your number press \n\n /reverifyphone \n\n to restart the verify process \n\n Please insert 6-digit verification code here:");
+            //Send Reply
+            $reply = urlencode("SMS contains 6-digit code has been sent to {$phone_number} \n\n if {$phone_number} is not your number press \n\n /reverifyphone \n\n to restart the verify process \n\n Please insert 6-digit verification code here:");
 
-            file_get_contents($url . "/sendmessage?text=".$reply."&reply_to_message_id=".$callback_message_id."&chat_id=" . $callback_chat_id);
+            // file_get_contents($url . "/sendmessage?text=".$reply."&reply_to_message_id=".$callback_message_id."&chat_id=" . $callback_chat_id);
+            file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $callback_chat_id);
             $this->savechatdata($update_id,$reply,'SYSTEM',$callback_chat_id,$callback_message_id);
 
             exit;
         }
 
-        if($callback_text === 'no' && $textType == 'phone_number'){
+        if($callback_text === 'no'){
+
+            $phone_number = Db::table('tg_tp88user')->where('chat_id', $callback_chat_id)->value('number');
 
             // remove keyboard
             $data = http_build_query([
-                'text' => $phone." confirm your phone number?",
+                'text' => $phone_number." confirm your phone number?",
                 'chat_id' => $callback_chat_id,
                 'message_id' => $callback_message_id
             ]);
