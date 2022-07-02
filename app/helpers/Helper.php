@@ -22,7 +22,7 @@ if (!function_exists('api')) {
             CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'api-key: L3eFthWAUAXDsg5c1eOZP3qpDZAgo8ga'
+                'api-key:'.env('gameapi.game_api_secret_key')
             ),
         ));
 

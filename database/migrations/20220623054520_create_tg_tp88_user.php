@@ -72,6 +72,8 @@ class CreateTgTp88User extends Migrator
 
         ->addColumn(Column::string('username',100)->setDefault(null)->setNullable()->setComment('User Name'))
 
+        ->addColumn(Column::string('password',255)->setDefault(null)->setNullable()->setComment('Password'))
+
         ->addColumn(Column::string('player_code',20)->setDefault(null)->setNullable()->setComment('Player Code'))
 
         ->addColumn(Column::string('name',100)->setDefault(null)->setNullable()->setComment('Telegram Name'))

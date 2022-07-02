@@ -230,7 +230,8 @@ class Api extends GameApi
 
                         'bot_id'       => $bot['id'],
                         'chat_id'      => $chat_id,
-                        'username'     => $name,
+                        'username'     => strtolower($first_name),
+                        'password'     => md5('Aabb@8899'),
                         'player_code'  => 'MY8'.rand(4,9999),
                         'name'         => $bot['name'],
 
@@ -241,6 +242,23 @@ class Api extends GameApi
                     if(is_null($userExists)){
 
                         $user = Db::table('tg_tp88user')->save($record);
+                          
+                        //Create player on game api
+                        $parameter = array(
+                            "op"   => env('gameapi.op'),
+                            "mem"  => $record['username'],
+                            "pass" => "Aabb8899",
+                        );
+
+                        $parameter['sign'] = md5($parameter['mem'].$parameter['op'].$parameter['pass'].env('gameapi.game_api_secret_key'));
+
+                        Log::record($parameter);
+
+                        $response = $this->executeGameApiCommand($url,'/createplayer',$parameter,$update_id,$name,$chat_id,$message_id);
+
+                        Log::record($response);
+                        
+
                     }
 
                     $getUserDetail = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();
@@ -256,16 +274,84 @@ class Api extends GameApi
                     $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
             
                 break;
-                // case "/opcredit":
+                case "/opcredit":
+
+                    $parameter = array(
+                        'op'  => env('gameapi.op'),
+                        'sign'=> md5('tp88'.env('gameapi.game_api_secret_key'))
+                    );
+
+                    $apiResponse = $this->executeGameApiCommand($url,$text,$parameter,$update_id,$name,$chat_id,$message_id);
+
+                    if($apiResponse['desc'] == 'SUCCESS'){
+                        $messageContent = urlencode("💰Baki Kredit: RM{$apiResponse['credit']} \n");
+
+                        file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
+    
+                        $message = "opcredit response has been sent to user.";
+    
+                        $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+                    }
+
+                break;
+                case "/balance":
+
+                    $getUserDetail = Db::table('tg_tp88user')->where('chat_id',$chat_id)->find();
+
+                    $parameter = array(
+                        'op'   => env('gameapi.op'),
+                        'prod' => env('gameapi.prod'),
+                        'mem'  => $getUserDetail['username'],
+                        'pass' => 'Aabb8899',
+                    );
+
+                    $parameter['sign'] = md5($parameter['mem'].$parameter['op'].$parameter['pass'].$parameter['prod'].env('gameapi.game_api_secret_key'));
+
+                    $apiResponse = $this->executeGameApiCommand($url,$text,$parameter,$update_id,$name,$chat_id,$message_id);
+
+                    if($apiResponse['desc'] == 'SUCCESS'){
+                        $messageContent = urlencode("🔮{$getUserDetail['username']} {$getUserDetail['player_code']},\n\n💰Baki Wallet: RM{$apiResponse['balance']} \n");
+
+                        file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
+    
+                        $message = "Balance response has been sent to user.";
+    
+                        $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+                    }
+                    
+                break;
+                // case "/deposit":
 
                 //     $parameter = array(
-                //         'op'=>'a001',
-                //         'sign'=>'a001L3eFthWAUAXDsg5c1eOZP3qpDZAgo8ga'
+                //         'op'   => env('gameapi.op'),
+                //         'prod' => env('gameapi.prod'),
+                //         'ref_no' => 'DEP000002',
+                //         'amount' => 10.00,
+                //         'mem'    => 'easytogo',
+                //         'pass'   => 'Abc123',
                 //     );
+
+                //     $parameter['sign'] = md5($parameter['amount'].$parameter['mem'].$parameter['op'].$parameter['pass'].$parameter['prod'].$parameter['ref_no'].env('gameapi.game_api_secret_key'));
 
                 //     $this->executeGameApiCommand($url,$text,$parameter,$update_id,$name,$chat_id,$message_id);
 
-                //     break;
+                // break;
+                // case "/withdraw":
+
+                //     $parameter = array(
+                //         'op'   => env('gameapi.op'),
+                //         'prod' => env('gameapi.prod'),
+                //         'ref_no' => 'WIT000002',
+                //         'amount' => 10.00,
+                //         'mem'    => 'easytogo',
+                //         'pass'   => 'Abc123',
+                //     );
+
+                //     $parameter['sign'] = md5($parameter['amount'].$parameter['mem'].$parameter['op'].$parameter['pass'].$parameter['prod'].$parameter['ref_no'].env('gameapi.game_api_secret_key'));
+
+                //     $this->executeGameApiCommand($url,$text,$parameter,$update_id,$name,$chat_id,$message_id);
+
+                // break;
                 default:
                     $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
 
@@ -779,13 +865,16 @@ class Api extends GameApi
 
         // Log::record($getResponse);
 
-        $response = http_build_query($getResponse,'',', ');
+        // $response = http_build_query($getResponse,'',', ');
 
-        file_get_contents($url . "/sendmessage?text=".urlencode("{$response}")."&parse_mode=html&chat_id=".$chat_id);
+        // file_get_contents($url . "/sendmessage?text=".urlencode("{$response}")."&parse_mode=html&chat_id=".$chat_id);
 
-        $message = $command." response has been sent to user.";
+        // $message = $command." response has been sent to user.";
 
-        $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+        // $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+
+
+        return $getResponse;
     }
 
 }
