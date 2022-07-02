@@ -180,13 +180,8 @@ class Admin extends Base
 
         $url = 'https://api.telegram.org/bot'.$token.'/getMe';
         $getBotDetail = getApiData($url);
-
+        // dd($getBotDetail);
         if($getBotDetail['ok']){
-
-            $res = Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
-            if($res === 1){
-               exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
-            }
 
             $masterBotData['bot_id']    = $getBotDetail['result']['id'];
             $masterBotData['name']      = $getBotDetail['result']['first_name']; 
@@ -200,6 +195,11 @@ class Admin extends Base
                 $masterBot = Db::table('master_bot')->save($masterBotData);
             }else{
                 $masterBot = Db::table('master_bot')->where('bot_id', $getBotDetail['result']['id'])->update($masterBotData);
+            }
+
+            $res = Db::table('admin')->where(array('id'=>$this->_admin['id']))->update($data);
+            if($res === 1){
+              exit(json_encode(array('code'=>1,'msg'=>'保存失败')));
             }
 
         }else{
