@@ -65,4 +65,6 @@ Route::post('index', 'admin/Index/index');
 
 Route::get('call_api', 'Api/callApi');
 
+// Product Route
+Route::resource('product', 'admin/Product');
 

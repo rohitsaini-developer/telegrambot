@@ -102,86 +102,6 @@ class Api extends GameApi
 
         // $textType = $update['callback_query']['message']['reply_to_message']['entities'][0]['type'] ?? '';
 
-
-
-
-
-        
-
-      /*  
-
-        if(is_numeric($data['text'])==true){
-
-        //查Q绑
-
-         $qq_bang = Db::connect([
-
-            // 数据库类型
-
-            'type'        => 'mysql',
-
-            // 数据库连接DSN配置
-
-            'dsn'         => '',
-
-            // 服务器地址
-
-            'hostname'    => '127.0.0.1',
-
-            // 数据库名
-
-            'database'    => 'qbang',
-
-            // 数据库用户名
-
-            'username'    => 'qbang',
-
-            // 数据库密码
-
-            'password'    => '25DtWExEBdbpHF5R',
-
-            // 数据库连接端口
-
-            'hostport'    => '',
-
-            // 数据库连接参数
-
-            'params'      => [],
-
-            // 数据库编码默认采用utf8
-
-            'charset'     => 'utf8',
-
-            // 数据库表前缀
-
-            'prefix'      => 'think_',
-
-        ])
-
-        ->table('8eqq')
-
-        ->where(array('username'=>$data['text']))
-
-        ->find();
-
-        
-
-            if($qq_bang){
-
-                file_get_contents($url . "/sendmessage?text=绑定手机号：". $qq_bang['mobile'] ."&chat_id=" . $chat_id);
-
-                exit;
-
-            }else{
-
-                file_get_contents($url . "/sendmessage?text=该QQ未泄露" ."&chat_id=" . $chat_id);
-
-                exit;
-
-            }
-
-        }*/
-
         
 
         /**
@@ -252,13 +172,12 @@ class Api extends GameApi
 
                         $parameter['sign'] = md5($parameter['mem'].$parameter['op'].$parameter['pass'].env('gameapi.game_api_secret_key'));
 
-                        Log::record($parameter);
+                        // Log::record($parameter);
 
                         $response = $this->executeGameApiCommand($url,'/createplayer',$parameter,$update_id,$name,$chat_id,$message_id);
 
                         Log::record($response);
                         
-
                     }
 
                     $getUserDetail = Db::table('tg_tp88user')->where('bot_id', $bot['id'])->where('chat_id',$chat_id)->find();

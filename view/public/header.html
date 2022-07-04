@@ -7,12 +7,12 @@
 	<link rel="icon" href="https://c.tenor.com/5kVvhTyi3Z8AAAAi/telegram.gif"/>
 
 	<!-- Fonts and icons -->
-	<script src="../public/static/admin/js/plugin/webfont/webfont.min.js"></script>
+	<script src="{:env('app.app_url')}static/admin/js/plugin/webfont/webfont.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
 	<script>
 		WebFont.load({
 			google: {"families":["Lato:300,400,700,900"]},
-			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['../public/static/admin/css/fonts.min.css']},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['{:env("app.app_url")}static/admin/css/fonts.min.css']},
 			active: function() {
 				sessionStorage.fonts = true;
 			}
@@ -20,11 +20,11 @@
 	</script>
 
 	<!-- CSS Files -->
-	<link rel="stylesheet" href="../public/static/admin/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../public/static/admin/css/atlantis.min.css">
+	<link rel="stylesheet" href="{:env('app.app_url')}static/admin/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{:env('app.app_url')}static/admin/css/atlantis.min.css">
 
 	<!-- CSS Just for demo purpose, don't include it in your project -->
-	<link rel="stylesheet" href="../public/static/admin/css/demo.css">
+	<link rel="stylesheet" href="{:env('app.app_url')}static/admin/css/demo.css">
 </head>
 <body data-background-color="dark">
 	<div class="wrapper">
@@ -77,14 +77,14 @@
 						<li class="nav-item dropdown hidden-caret">
 							<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
 								<div class="avatar-sm">
-									<img src="../public/static/img/avatar.png" alt="..." class="avatar-img rounded-circle">
+									<img src="{:env('app.app_url')}static/img/avatar.png" alt="..." class="avatar-img rounded-circle">
 								</div>
 							</a>
 							<ul class="dropdown-menu dropdown-user animated fadeIn">
 								<div class="dropdown-user-scroll scrollbar-outer">
 									<li>
 										<div class="user-box">
-											<div class="avatar-lg"><img src="../public/static/img/avatar.png" alt="image profile" class="avatar-img rounded"></div>
+											<div class="avatar-lg"><img src="{:env('app.app_url')}static/img/avatar.png" alt="image profile" class="avatar-img rounded"></div>
 											<div class="u-text">
 												<h4>{$admin.name}</h4>
 												<a href="setting_bot" class="btn btn-xs btn-secondary btn-sm">配置机器人</a>
@@ -122,30 +122,37 @@
 							<h4 class="text-section">功能栏</h4>
 						</li>
 					   <li class="nav-item">
-							<a href="admin">
+							<a href="{:env('app.app_url')}admin">
 								<i class="fas fa-robot"></i>
 								<p>首页</p>
 							</a>
 						</li>
 						
 						<li class="nav-item">
-							<a href="setting_bot">
+							<a href="{:env('app.app_url')}setting_bot">
 								<i class="fas fa-cogs"></i>
 								<p>配置机器人</p>
 							</a>
 						</li>
 						
 						<li class="nav-item">
-							<a href="message">
+							<a href="{:env('app.app_url')}message">
 								<i class="fas fa-laugh-squint"></i>
 								<p>消息中心</p>
 							</a>
 						</li>
 						
 						<li class="nav-item">
-							<a href="huifu">
+							<a href="{:env('app.app_url')}huifu">
 								<i class="far fa-newspaper"></i>
 								<p>回复列表</p>
+							</a>
+						</li>	
+
+						<li class="nav-item">
+							<a href="{:env('app.app_url')}product">
+								<i class="fa fa-list"></i>
+								<p>Product List</p>
 							</a>
 						</li>	
 						
@@ -167,12 +174,12 @@
 							<div class="collapse" id="base">
 								<ul class="nav nav-collapse">
 									<li>
-										<a href="huifu_zn">
+										<a href="{:env('app.app_url')}huifu_zn">
 											<span class="sub-item">智能回复</span>
 										</a>
 									</li>
 									<li>
-										<a href="huifu_bq">
+										<a href="{:env('app.app_url')}huifu_bq">
 											<span class="sub-item">标签回复</span>
 										</a>
 									</li>
@@ -190,12 +197,12 @@
 							<div class="collapse" id="base1">
 								<ul class="nav nav-collapse">
 									<li>
-										<a href="shangpin_gid">
+										<a href="{:env('app.app_url')}shangpin_gid">
 											<span class="sub-item">商品分组</span>
 										</a>
 									</li>
 									<li>
-										<a href="shangpin">
+										<a href="{:env('app.app_url')}shangpin">
 											<span class="sub-item">添加商品</span>
 										</a>
 									</li>

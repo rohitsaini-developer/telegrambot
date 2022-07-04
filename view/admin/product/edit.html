@@ -1,0 +1,146 @@
+<!--智能回复-->
+{include file="public/header"}
+
+<div class="content">
+<div class="page-inner">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Product</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{:env('app.app_url')}product/update/{$product.id}">
+                        <input type="hidden" name="id" value="{$product.id}">
+                        <div class="form-group">
+                            <label for="successInput">Name</label>
+                            <input type="text" id="name" name="name" value="{$product.name}" class="form-control">
+                        </div>
+                        		
+                        <div class="form-group">
+                            <label for="successInput">Code</label>
+                            <input type="text" id="code" name="code" value="{$product.code}" class="form-control">		
+                        </div>
+
+                        <div class="form-group">
+                            <label for="defaultSelect">Status</label>
+                            <select class="form-control form-control" id="status" name="status">
+                                <option value="active"  {$product.status == 'active' ? 'selected' : '' }>Active</option>
+                                <option value="inactive"  {$product.status == 'inactive' ? 'selected' : '' }>Inactive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" name="update" class="btn btn-success float-right" value="Update">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{include file="public/footer"}
+
+<script>
+
+    function IsNull(str) {
+    	return (Trim(str) == "") ? false : true;
+    }
+    function Trim(str) {
+    	return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+    function replaceHTML(str){
+      str = str.replace(/<[^>].*?>/g,"");
+      str = str.replace(/&nbsp;/g,"");
+      return str;
+    }
+
+    function edit_item(){
+        
+        var name = $('#name').val();
+        var code = $.trim($('#code').val());
+        var status = $('#status').val();
+        
+        if(!name){
+               $.notify({
+                	icon: 'flaticon-alarm-1',
+                	title: '操作提示',
+                	message: '请填写产品名称',
+                },{
+                	type: 'info',
+                	placement: {
+                		from: "bottom",
+                		align: "right"
+                	},
+                	time: 1000,
+                });
+              return;
+        }
+
+        if(!code){
+               $.notify({
+                	icon: 'flaticon-alarm-1',
+                	title: '操作提示',
+                	message: '请填写产品代码',
+                },{
+                	type: 'info',
+                	placement: {
+                		from: "bottom",
+                		align: "right"
+                	},
+                	time: 1000,
+                });
+              return;
+        }
+        if(!status){
+               $.notify({
+                	icon: 'flaticon-alarm-1',
+                	title: '操作提示',
+                	message: '请填写产品代码',
+                },{
+                	type: 'info',
+                	placement: {
+                		from: "bottom",
+                		align: "right"
+                	},
+                	time: 1000,
+                });
+              return;
+        }
+        
+        $.post('{env("app.app_url")}update',{'name':name,'code':code,'status':status},function(res){
+            if(res.code>0){
+                $.notify({
+                	icon: 'flaticon-alarm-1',
+                	title: '操作提示',
+                	message: res.msg,
+                },{
+                	type: 'info',
+                	placement: {
+                		from: "bottom",
+                		align: "right"
+                	},
+                	time: 1000,
+                });
+            }else{
+
+               $.notify({
+                	icon: 'flaticon-alarm-1',
+                	title: '操作提示',
+                	message: res.msg,
+                },{
+                	type: 'info',
+                	placement: {
+                		from: "bottom",
+                		align: "right"
+                	},
+                	time: 1000,
+                });
+                setTimeout(function(){location.reload()},800);
+            }
+        },'json');
+        
+    }
+</script>
