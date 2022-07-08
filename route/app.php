@@ -40,8 +40,7 @@ Route::get('shangpin_gid', 'admin/Admin/shangpin_gid');
 
 Route::get('api', 'Api/index'); // telegram回调接口
 
-Route::get('api1', 'Api/ceshi'); // api测试
-
+Route::get('api1', 'Api/ceshi'); // apitest
 
 Route::post('add_token', 'admin/Admin/add_token');
 

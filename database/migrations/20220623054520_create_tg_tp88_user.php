@@ -86,6 +86,8 @@ class CreateTgTp88User extends Migrator
 
         ->addColumn(Column::string('account',20)->setDefault(null)->setNullable()->setComment('Account number'))
 
+        ->addColumn(Column::string('verification_code',20)->setDefault(null)->setNullable()->setComment('Verification Code'))
+
         ->addColumn(Column::tinyInteger('verify')->setDefault(0)->setComment('0: Not Verified 1: Verified'))
 
         ->addColumn(Column::tinyInteger('status')->setDefault(1)->setComment('1: Active 2: Banned 3: Problem'))

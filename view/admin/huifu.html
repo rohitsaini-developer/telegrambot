@@ -34,7 +34,11 @@
 									<td>{$api.text}</td>
 									<td>{$api.zh_name}&nbsp;&nbsp;{$api.api}</td>
 									<td>{:date('Y-m-d H:i:s',$api.add_time)}</td>
-									<td><button class="btn btn-danger btn-xs" onclick="delete_api('{$api.id}')">删除</button></td>
+									<td>
+									    <a href="#" class="btn btn-xs btn-danger" onclick="delete_api('{$api.id}')">Delete
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+									</td>
 								</tr>
                                 {/volist}
 							</tbody>

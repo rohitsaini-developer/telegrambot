@@ -75,5 +75,17 @@ class GameApi
         return api('POST',$this->apiUrl.'withdraw',$parameters);
         
     }
+    
+    /**
+     *
+     * Getappurl
+     * $parameters = array('op','prod','sign')
+     * Example Response : {{"err": 1,"desc": "SUCCESS","url": {"android": ["pi.d.918kiss.com","tm.d.918kiss.com "],"ios": ["pi.d.918kiss.com","tm.d.918kiss.com "]}}
+     */
+    public function getappurl($parameters = array()){
+
+        return api('POST',$this->apiUrl.'getappurl',$parameters);
+        
+    }
 
 }

@@ -1,5 +1,8 @@
 <?php
 
+use think\facade\Log;
+
+
 /**
  * API接口调用助手函数
  * @return array
@@ -90,3 +93,4 @@ if(!function_exists('sendMessage')){
     }
     
 }
+
