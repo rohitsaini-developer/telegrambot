@@ -49,6 +49,8 @@ class Api extends GameApi
 
         Log::record($update);
 
+        // Db::table('test_response')->insert(['response'=>json_encode($update)]);
+
         $chat_id = $update['message']['chat']['id'] ?? ''; // GET USER CHAT ID
 
         $first_name = $update['message']['from']['first_name'] ?? '';
@@ -86,7 +88,14 @@ class Api extends GameApi
         ->find();
 
         $lastCommand = Db::table('tg_message')->where('update_id',$update_id-1)->where('name',$name)->value('text');
-        
+        if($lastCommand == '/verify'){
+            $text = $update['message']['contact']['phone_number'] ?? $update['message']['text'];
+        }
+
+        //Some Values
+        $bot_id = Db::table('master_bot')->where('token',$token)->value('id');
+        $user_id = Db::table('tg_tp88user')->where('bot_id',$bot_id)->where('chat_id',$chat_id)->value('tuid');
+
         // Set Session
         $checkUser = Db::table('tg_tp88user')->where('chat_id',$chat_id)->where('verify',0)->find();
         if(!is_null($checkUser)){
@@ -153,31 +162,31 @@ class Api extends GameApi
                     //Get phone number
                     $reply = urlencode('We will need your mobile contact to verify your account. Use "Verify" below for fast verification.');
 
-                    // $requestPhoneKeyboard  = json_encode([
-                    //     "keyboard" => [
-                    //         [
-                    //             [
-                    //                 'text'=> 'Phone Number',
-                    //                 'callback_data' => 'Phone Number',
-                    //                 "one_time_keyboard" => true,
-                    //                 "request_contact" => true,
+                    $requestPhoneKeyboard  = json_encode([
+                        "keyboard" => [
+                            [
+                                [
+                                    'text'=> 'Phone Number',
+                                    'callback_data' => 'Phone Number',
+                                    "one_time_keyboard" => true,
+                                    "request_contact" => true,
 
-                    //             ],
-                    //             [
-                    //                 'text'=>'Cancel',
-                    //                 'callback_data'=>'Cancel',
-                    //             ],
-                    //         ]
+                                ],
+                                [
+                                    'text'=>'Cancel',
+                                    'callback_data'=>'Cancel',
+                                ],
+                            ]
                             
-                    //     ],
-                    //     "resize_keyboard" => true,
-                    //     "one_time_keyboard" => true,
-                    //     "selective" => true,
-                    // ]);
+                        ],
+                        "resize_keyboard" => true,
+                        "one_time_keyboard" => true,
+                        "selective" => true,
+                    ]);
 
-                    // file_get_contents($url . "/sendmessage?text=".$reply."&reply_markup=".urlencode($requestPhoneKeyboard )."&chat_id=" . $chat_id);
+                    file_get_contents($url . "/sendmessage?text=".$reply."&reply_markup=".urlencode($requestPhoneKeyboard )."&chat_id=" . $chat_id);
 
-                    file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
+                    // file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
                     
                     $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);   
                 break;
@@ -185,12 +194,13 @@ class Api extends GameApi
                     $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
 
                     $verificationCode = rand(6,999999);
+                    $phoneNumber = ltrim($text,"+");
 
-                    $phoneVerifyAPI = 'https://aptech88.com/api/tgverify/520ba4358a6ae41b2cf5df2207a7b001/'.$text.'/'.$verificationCode;
+                    $phoneVerifyAPI = 'https://aptech88.com/api/tgverify/520ba4358a6ae41b2cf5df2207a7b001/'.$phoneNumber.'/'.$verificationCode;
 
                     $response = getApiData($phoneVerifyAPI);
 
-                    Log::record($response);
+                    // Log::record($response);
                     
                     if($response['code'] == 0 && (isset($response['msg']) && $response['msg'] == 'Success')){
                         $bot = Db::table('master_bot')->where('token','=',$token)->find();
@@ -202,7 +212,7 @@ class Api extends GameApi
                             'password'     => md5('Aabb@8899'),
                             'player_code'  => 'MY8'.rand(4,9999),
                             'name'         => $bot['name'],
-                            'number'       => $text,
+                            'number'       => $phoneNumber,
                             'verification_code' => $verificationCode
                         );
                         
@@ -211,12 +221,8 @@ class Api extends GameApi
                         if(is_null($userExists)){
                             $user = Db::table('tg_tp88user')->save($record);
 
-                            // Log::record($user);
-
                         }else{
-                            $user = Db::table('tg_tp88user')->where('tuid',$userExists['tuid'])->update(['number'=> $text,'verification_code'=>$verificationCode]);
-
-                            // Log::record($user);
+                            $user = Db::table('tg_tp88user')->where('tuid',$userExists['tuid'])->update(['number'=> $phoneNumber,'verification_code'=>$verificationCode]);
 
                         }
 
@@ -227,8 +233,16 @@ class Api extends GameApi
                         $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
                     }
 
-                    // Log::record(session('isVerified'));
                     
+                break;
+                case ($text == 'Cancel') && ($lastCommand == '/verify'):
+                    $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
+
+                    $reply = urlencode("⚠️ Your mobile contact verification proccess has been cancel.");
+
+                    file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
+        
+                    $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
                 break;
                 case is_numeric($text) && strlen($text)<=6 && is_numeric($lastCommand):
 
@@ -251,53 +265,39 @@ class Api extends GameApi
                         // End Create player api
 
                         Db::table('tg_tp88user')->where('tuid',$verifyCode['tuid'])->update(['verification_code'=>null,'verify'=>1]);
-
-                        // $reply = urlencode("Phone number verified successfully.");
-
-                        // file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
-            
-                        // $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
-
-                        $reply = urlencode("Welcome to TestBot");
-
-                        file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
-            
-                        $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
     
-                        // Send Menu
-                        $api=Db::table('api')->alias('a')->join('api_gid b','a.gid=b.gid','LEFT')
-                        ->where(array('keywords'=>'/menu'))->field('a.gid as agid,a.*,b.*')->find();
-    
-                        file_get_contents($url . $api['api'].urlencode("{$api['text']}")."&".$api['param']."&chat_id=".$chat_id);
-            
-                        $message = "API ID: ".$api['id']." has been sent to user.";
-            
-                        $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
-
-                        //Send Balance details
+                        //Start get User Balance
                         $getUserDetail = Db::table('tg_tp88user')->where('chat_id',$chat_id)->find();
-
-                        $parameter = array(
+                        $parameterBalance = array(
                             'op'   => env('gameapi.op'),
                             'prod' => env('gameapi.prod'),
                             'mem'  => $getUserDetail['username'],
                             'pass' => 'Aabb8899',
                         );
-
-                        $parameter['sign'] = md5($parameter['mem'].$parameter['op'].$parameter['pass'].$parameter['prod'].env('gameapi.game_api_secret_key'));
-
-                        $apiResponse = $this->executeGameApiCommand($url,'/balance',$parameter,$update_id,$name,$chat_id,$message_id);
+    
+                        $parameterBalance['sign'] = md5($parameterBalance['mem'].$parameterBalance['op'].$parameterBalance['pass'].$parameterBalance['prod'].env('gameapi.game_api_secret_key'));
+    
+                        $apiResponse = $this->executeGameApiCommand($url,'/balance',$parameterBalance,$update_id,$name,$chat_id,$message_id);
+    
+                        $messageContent = '';
 
                         if($apiResponse['desc'] == 'SUCCESS'){
-                            $messageContent = urlencode("🔮{$getUserDetail['username']} {$getUserDetail['player_code']},\n\n💰Baki Wallet: RM{$apiResponse['balance']} \n");
-
-                            file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
-        
-                            $message = "Balance response has been sent to user.";
-        
-                            $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+                            $messageContent .= "🔮{$getUserDetail['username']} {$getUserDetail['player_code']},\n💰Baki Wallet: RM{$apiResponse['balance']} \n\n";
                         }
+                        //End get User Balance
+
+                        // Send Menu
+                        $api=Db::table('api')->alias('a')->join('api_gid b','a.gid=b.gid','LEFT')
+                        ->where(array('keywords'=>'/menu'))->field('a.gid as agid,a.*,b.*')->find();
+    
+                        $messageContent .= $api['text'];
+
+                        file_get_contents($url . $api['api'].urlencode("{$messageContent}")."&".$api['param']."&chat_id=".$chat_id);
             
+                        $message = "API ID: ".$api['id']." has been sent to user.";
+            
+                        $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+
                     }else{
                         $reply = urlencode("Invalid Verification Code.\n/resend");
 
@@ -367,7 +367,7 @@ class Api extends GameApi
 
                             $response = $this->executeGameApiCommand($url,'/createplayer',$parameter,$update_id,$name,$chat_id,$message_id);
 
-                            Log::record($response);
+                            // Log::record($response);
                             
                         }
 
@@ -486,7 +486,139 @@ class Api extends GameApi
                         $messageContent = urlencode("⚠️Please verified your phone number first than use other command for execute.\n/verify");
                         file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
                         $message = "Please verified your phone number first.";
+                        $this->savechatdata($update_id,$message,'SYSTEM',$chat_id,$message_id);
+                    }
+                break;
+                case "/keluarkredit":
+                    
+                    $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
+
+                    if(session('isVerified')){
+                        $reply = urlencode("Enter amount for withdraw");
+
+                        file_get_contents($url . "/sendmessage?text=".$reply."&chat_id=" . $chat_id);
+            
+                        $this->savechatdata($update_id,$reply,'SYSTEM',$chat_id,$message_id);
+                    }else{
+                        $messageContent = urlencode("⚠️Please verified your phone number first than use other command for execute.\n/verify");
+                        file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
+                        $message = "Please verified your phone number first.";
+                        $this->savechatdata($update_id,$message,'SYSTEM',$chat_id,$message_id);
+                    }
+                
+                break;
+                case is_numeric($text) && $lastCommand == '/keluarkredit':
+                    $this->savechatdata($update_id,$text,$name,$chat_id,$message_id);
+                    if(session('isVerified')){
+
+                        $message = '';
+
+                        //Start Check Reference Number
+                        $checkEntry = Db::table('transaction')->where('type','withdraw')->order('id', 'desc')->find();
+
+                        if(is_null($checkEntry)){
+                            $ref_number = referenceNumber('WIT',1,6);
+                        }else{
+                            $increment_ref = (int)substr($checkEntry['ref_no'],3)+1;
+                            $ref_number = referenceNumber('WIT',$increment_ref,6);
+                        }
+                        //End Check Reference Number
+
+                        //Start withdraw api
+                        $parameter = array(
+                            'op'     => env('gameapi.op'),
+                            'prod'   => env('gameapi.prod'),
+                            'ref_no' => $ref_number,
+                            'amount' => $text,
+                            'mem'    => strtolower($first_name),
+                            'pass'   => 'Aabb8899',
+                            'sign'   => md5($text.strtolower($first_name).env('gameapi.op').'Aabb8899'.env('gameapi.prod').$ref_number.env('gameapi.game_api_secret_key'))
+                        );
+
+                        $apiResponse = $this->executeGameApiCommand($url,'/withdraw',$parameter,$update_id,$name,$chat_id,$message_id);
+
+                        $transaction = Db::table('transaction')->where('ref_no',$ref_number)->where('type','withdraw')->find();
+
+                        if($apiResponse['desc'] == 'SUCCESS'){
+
+                            if( is_null($transaction) ){
+
+                                $record = array(
+                                    'bot_id'  => $bot_id,
+                                    'user_id' => $user_id,
+                                    'ref_no'  => $ref_number,
+                                    'type'    => 'withdraw',
+                                    'amount'  => $text,
+                                    'description' => 'Withdraw amount!',
+                                    'status' => 1
+                                );
+            
+                                Db::table('transaction')->insert($record);
+                            }
+
+                            $message .= "Successfully withdraw!\n\n";
+
+                            //Start get User Balance
+                            $getUserDetail = Db::table('tg_tp88user')->where('tuid',$user_id)->find();
+                            $parameterBalance = array(
+                                'op'   => env('gameapi.op'),
+                                'prod' => env('gameapi.prod'),
+                                'mem'  => $getUserDetail['username'],
+                                'pass' => 'Aabb8899',
+                            );
+        
+                            $parameterBalance['sign'] = md5($parameterBalance['mem'].$parameterBalance['op'].$parameterBalance['pass'].$parameterBalance['prod'].env('gameapi.game_api_secret_key'));
+        
+                            $apiResponseBalance = $this->executeGameApiCommand($url,'/balance',$parameterBalance,$update_id,$name,$chat_id,$message_id);
+        
+                            
+                            if($apiResponseBalance['desc'] === 'SUCCESS'){
+                                $message .= "🔮{$getUserDetail['username']} {$getUserDetail['player_code']},\n💰Baki Wallet: RM{$apiResponseBalance['balance']} \n\n";
+                            }
+                            //End get User Balance
+                            
+                        }else if($apiResponse['desc'] == 'REFERENCE_ID_EXISTED'){
+                            
+                            if( is_null($transaction) ){
+
+                                $record = array(
+                                    'bot_id'  => $bot_id,
+                                    'user_id' => $user_id,
+                                    'ref_no'  => $ref_number,
+                                    'type'    => 'withdraw',
+                                    'amount'  => $text,
+                                    'description' => 'REFERENCE_ID_EXISTED',
+                                    'status' => 2
+                                );
+            
+                                Db::table('transaction')->insert($record); 
+                            }
+
+                            $message = "⚠️ Reference id existed. Please try again.\n/keluarkredit";
+
+                        }else if($apiResponse['desc'] == 'MEMBER_INSUFFICIENT_BALANCE'){
+
+                           $message = "⚠️ User has not insufficient balance. Please try again.\n/keluarkredit";
+                            
+                        }
+
+                        //Send Messags
+                        if(!empty($message)){
+                            $messageContent = urlencode($message);
+
+                            file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
+                           
+                            $this->savechatdata($update_id,$messageContent,'SYSTEM',$chat_id,$message_id);
+                        }
+                        //End withdraw api
+
+                    }else{
+
+                        $messageContent = urlencode("⚠️Please verified your phone number first than use other command for execute.\n/verify");
+                        file_get_contents($url . "/sendmessage?text={$messageContent}&parse_mode=html&chat_id=".$chat_id);
+                        $message = "Please verified your phone number first.";
                         $this->savechatdata(0,$message,'SYSTEM',$chat_id,$message_id);
+
                     }
                 break;
                 default:

@@ -31,6 +31,7 @@ class CreateMasterBot extends Migrator
         // create the table
         $table  =  $this->table('master_bot');
         $table->addColumn('bot_id', 'string',array('limit'=>64,'comment'=>'bot_id'))
+        ->addColumn('aptech_id', 'integer',array('default'=>Null,'comment'=>'Aptech Id'))
         ->addColumn('name', 'string',array('limit'  =>  255,'default'=>Null,'comment'=>'Bot Name'))
         ->addColumn('username', 'string',array('limit'  =>  255,'default'=>Null,'comment'=>'Bot Username'))
         ->addColumn('token', 'text',array('default'=>Null,'comment'=>'Bot Token'))

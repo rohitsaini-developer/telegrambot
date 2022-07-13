@@ -15,6 +15,7 @@ class Product extends Base
      */
     public function index()
     {
+        $products['title1']='Game List';
         $products = ProductModel::select();
 
         return view('admin/product/index', compact('products'));

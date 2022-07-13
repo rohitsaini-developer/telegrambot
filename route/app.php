@@ -64,6 +64,8 @@ Route::post('index', 'admin/Index/index');
 
 Route::get('call_api', 'Api/callApi');
 
+Route::get('usercenter', 'admin/Admin/userdata');
+
 // Product Route
 Route::resource('product', 'admin/Product');
 

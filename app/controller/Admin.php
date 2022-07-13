@@ -370,4 +370,13 @@ class Admin extends Base
         return json(array('code'=>0,'msg'=>'删除成功'));
         
     }
+    
+    //USER界面
+    public function userdata(){
+        $data['title1']='USER DATA CENTER';
+        $data['tg_user']=Db::table('tg_tp88user')->order('tuid desc')->paginate(10);
+        //dump($data['tg_message']);
+
+        return view('admin/usercenter', compact('data'));
+    }
 }

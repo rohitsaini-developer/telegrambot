@@ -33,7 +33,9 @@ class PinHistory extends Migrator
         $table  =  $this->table('pin_history');
         $table->addColumn(Column::integer('bot_id')->setComment('Bot Id'))
         ->addForeignKey('bot_id', 'master_bot','id',array())
-        ->addColumn('chat_id', 'string',array('limit'=>64,'comment'=>'Chat Id'))
+
+        ->addColumn(Column::integer('user_id')->setComment('User Id'))
+        ->addForeignKey('user_id', 'tg_tp88user','tuid',array())
 
         ->addColumn(Column::string('pin_number',100)->setDefault(null)->setNullable()->setComment('PIN Number'))
         ->addColumn(Column::string('code',50)->setDefault(null)->setNullable()->setComment('Code'))

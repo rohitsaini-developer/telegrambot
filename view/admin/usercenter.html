@@ -1,0 +1,70 @@
+<!--消息信息-->
+{include file="public/header"}
+
+<div class="content">
+	<div class="page-inner">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title">
+                            User List
+                            <!--<a href="product/create" class="btn btn-sm btn-success float-right">Add</a>-->
+                        </div>
+					</div>
+					<div class="card-body">
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">UID</th>
+									<th scope="col">ChatID</th>
+									<th scope="col">Username</th>
+									<th scope="col">PlayerCode</th>
+									<th scope="col">Number</th>
+									<th scope="col">VerifyCode</th>
+									<th scope="col">Verify</th>
+									<th scope="col">Status</th>
+									<th scope="col">Create Time</th>
+									<!--<th scope="col">Action</th>-->
+								</tr>
+							</thead>
+							<tbody>
+							    {volist name="data.tg_user" id="vo"}
+								<tr>
+									<td>{$vo.tuid}</td>
+									<td>{$vo.chat_id}</td>
+									<td>{$vo.username}</td>
+									<td>{$vo.player_code}</td>
+									<td>{$vo.number}</td>
+									<td>{$vo.verification_code}</td>
+									<td>
+                                        <span class="badge {$vo.verify == '1' ? 'badge-success' : 'badge-danger' }">{$vo.verify == '1' ? 'Verify' : 'Not Verify' }</span>
+                                    </td>
+									<td>
+                                        <span class="badge {$vo.status == '1' ? 'badge-success' : 'badge-danger' }">{$vo.status == '1' ? 'Active' : 'Problem' }</span>
+                                    </td>
+									<td>{$vo.create_time}</td>
+									<!--<td>-->
+         <!--                               <a href="#" class="btn btn-xs btn-danger" onclick="delete_item('{$vo.tuid}')">-->
+         <!--                                   <i class="fas fa-trash-alt"></i>-->
+         <!--                               </a>-->
+         <!--                               <a href="product/{$vo.tuid}/edit" class="btn btn-xs btn-info" >-->
+         <!--                                   <i class="fas fa-edit"></i>-->
+         <!--                               </a>-->
+                                        <!-- <a href="product/show" class="btn btn-xs btn-secondary" >
+                                            <i class="fas fa-eye"></i>
+                                        </a> -->
+                                    <!--</td>-->
+								</tr>
+                                {/volist}
+							</tbody>
+						</table>
+						{:$data.tg_user->render()}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{include file="public/footer"}

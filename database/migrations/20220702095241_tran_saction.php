@@ -33,7 +33,12 @@ class TranSaction extends Migrator
 
           $table  =  $this->table('transaction');
 
-          $table->addColumn(Column::integer('user_id')->setComment('User Id'))
+          
+          $table->addColumn(Column::integer('bot_id')->setComment('Bot Id'))
+  
+          ->addForeignKey('bot_id', 'master_bot','id',array())
+
+          ->addColumn(Column::integer('user_id')->setComment('User Id'))
   
           ->addForeignKey('user_id', 'tg_tp88user','tuid',array())
   

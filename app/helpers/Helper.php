@@ -94,3 +94,19 @@ if(!function_exists('sendMessage')){
     
 }
 
+
+
+/**
+ * referenceNumber - create reference number
+ */
+if(!function_exists('referenceNumber')){
+    function referenceNumber($stringConstant, $refNumber, $length) {
+        
+        $ref_value = $stringConstant.str_pad($refNumber, $length, '0', STR_PAD_LEFT);;
+
+        return $ref_value;
+       
+    }
+    
+}
+

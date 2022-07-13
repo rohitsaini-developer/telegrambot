@@ -34,7 +34,8 @@ class Wallet extends Migrator
             $table->addColumn(Column::integer('bot_id')->setComment('Bot Id'))
             ->addForeignKey('bot_id', 'master_bot','id',array())
 
-            ->addColumn('chat_id', 'string',array('limit'=>64,'comment'=>'Chat Id'))
+            ->addColumn(Column::integer('user_id')->setComment('User Id'))
+            ->addForeignKey('user_id', 'tg_tp88user','tuid',array())
 
             ->addColumn(Column::integer('pin_id')->setComment('Pin Id'))
             ->addForeignKey('pin_id', 'pin_history','id',array())

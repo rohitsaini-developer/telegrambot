@@ -20,8 +20,9 @@
 									<th scope="col">id</th>
 									<th scope="col">Name</th>
 									<th scope="col">Code</th>
+									<th scope="col">GameData</th>
 									<th scope="col">Status</th>
-									<th scope="col">Create Time</th>
+									<th scope="col">Update Time</th>
 									<th scope="col">Action</th>
 								</tr>
 							</thead>
@@ -31,10 +32,11 @@
 									<td>{$product.id}</td>
 									<td>{$product.name}</td>
 									<td>{$product.code}</td>
+									<td>{$product.gamedata}</td>
 									<td>
                                         <span class="badge {$product.status == 'active' ? 'badge-success' : 'badge-danger' }">{:ucfirst($product.status)}</span>
                                     </td>
-									<td>{$product.create_time}</td>
+									<td>{$product.update_time}</td>
 									<td>
                                         <a href="#" class="btn btn-xs btn-danger" onclick="delete_item('{$product.id}')">
                                             <i class="fas fa-trash-alt"></i>
